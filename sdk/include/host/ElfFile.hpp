@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstdint>
 
 #include "./common.h"
 #include "shared/keystone_user.h"
