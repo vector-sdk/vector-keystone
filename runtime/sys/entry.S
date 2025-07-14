@@ -152,7 +152,7 @@ __save_context:
   csrr t0, sstatus
   STORE t0, 32*REGBYTES(sp)
 
-  csrr t0, sbadaddr
+  csrr t0, stval
   STORE t0, 33*REGBYTES(sp)
 
   csrr s2, scause

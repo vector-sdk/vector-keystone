@@ -57,7 +57,7 @@ struct csrs
   uintptr_t sepc;       //Supervisor exception program counter.
   uintptr_t scause;     //Supervisor trap cause.
   //NOTE: This should be stval, toolchain issue?
-  uintptr_t sbadaddr;   //Supervisor bad address.
+  uintptr_t stval;      //Supervisor bad address.
   uintptr_t sip;        //Supervisor interrupt pending.
 
   /*  Supervisor Protection and Translation */

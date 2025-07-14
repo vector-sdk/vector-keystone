@@ -70,7 +70,7 @@ thread){
   LOCAL_SWAP_CSR(sscratch);
   LOCAL_SWAP_CSR(sepc);
   LOCAL_SWAP_CSR(scause);
-  LOCAL_SWAP_CSR(sbadaddr);
+  LOCAL_SWAP_CSR(stval);
   LOCAL_SWAP_CSR(sip);
   LOCAL_SWAP_CSR(satp);
 
@@ -112,7 +112,7 @@ void clean_smode_csrs(struct thread_state* state){
   state->prev_csrs.sscratch = 0;
   state->prev_csrs.sepc = 0;
   state->prev_csrs.scause = 0;
-  state->prev_csrs.sbadaddr = 0;
+  state->prev_csrs.stval = 0;
   state->prev_csrs.sip = 0;
   state->prev_csrs.satp = 0;
 
