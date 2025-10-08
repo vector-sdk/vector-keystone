@@ -1,16 +1,15 @@
-diff --git a/hw/riscv/boot.c b/hw/riscv/boot.c
-index ebd351c840..7fe4b756bf 100644
---- a/hw/riscv/boot.c
-+++ b/hw/riscv/boot.c
+diff -Naur a/hw/riscv/boot.c b/hw/riscv/boot.c
+--- a/hw/riscv/boot.c	2025-04-22 23:26:11.000000000 +0300
++++ b/hw/riscv/boot.c	2025-08-13 08:21:55.301922499 +0300
 @@ -26,6 +26,7 @@
  #include "hw/loader.h"
  #include "hw/riscv/boot.h"
  #include "hw/riscv/boot_opensbi.h"
 +#include "hw/riscv/virt.h"
  #include "elf.h"
- #include "sysemu/device_tree.h"
- #include "sysemu/qtest.h"
-@@ -294,41 +295,75 @@ void riscv_setup_rom_reset_vec(MachineState *machine, RISCVHartArrayState *harts
+ #include "system/device_tree.h"
+ #include "system/qtest.h"
+@@ -435,52 +436,86 @@
      int i;
      uint32_t start_addr_hi32 = 0x00000000;
      uint32_t fdt_load_addr_hi32 = 0x00000000;
@@ -30,7 +29,7 @@ index ebd351c840..7fe4b756bf 100644
 +        }
 +
 +        rom_add_blob_fixed_as("mrom.reset", rom, bl_size,
-+                                rom_base, &address_space_memory);
++                              rom_base, &address_space_memory);
 +        g_free(rom);
 +
 +        /* we also need the fdt */
@@ -72,9 +71,14 @@ index ebd351c840..7fe4b756bf 100644
 -        reset_vec[4] = 0x0182b283;   /*     ld     t0, 24(t0) */
 -    }
  
--    /* copy in the reset vector in little_endian byte order */
--    for (i = 0; i < ARRAY_SIZE(reset_vec); i++) {
--        reset_vec[i] = cpu_to_le32(reset_vec[i]);
+-    if (!harts->harts[0].cfg.ext_zicsr) {
+-        /*
+-         * The Zicsr extension has been disabled, so let's ensure we don't
+-         * run the CSR instruction. Let's fill the address with a non
+-         * compressed nop.
+-         */
+-        reset_vec[2] = 0x00000013;   /*     addi   x0, x0, 0 */
+-    }
 +        if (!riscv_is_32bit(harts)) {
 +            start_addr_hi32 = start_addr >> 32;
 +            fdt_load_addr_hi32 = fdt_load_addr >> 32;
@@ -91,7 +95,7 @@ index ebd351c840..7fe4b756bf 100644
 +            start_addr_hi32,
 +            fdt_load_addr,               /* fdt_laddr: .dword */
 +            fdt_load_addr_hi32,
-+                                         /* fw_dyn: */
++            /* fw_dyn: */
 +        };
 +        if (riscv_is_32bit(harts)) {
 +            reset_vec[3] = 0x0202a583;   /*     lw     a1, 32(t0) */
@@ -100,6 +104,25 @@ index ebd351c840..7fe4b756bf 100644
 +            reset_vec[3] = 0x0202b583;   /*     ld     a1, 32(t0) */
 +            reset_vec[4] = 0x0182b283;   /*     ld     t0, 24(t0) */
 +        }
+ 
+-    /* copy in the reset vector in little_endian byte order */
+-    for (i = 0; i < ARRAY_SIZE(reset_vec); i++) {
+-        reset_vec[i] = cpu_to_le32(reset_vec[i]);
+-    }
+-    rom_add_blob_fixed_as("mrom.reset", reset_vec, sizeof(reset_vec),
+-                          rom_base, &address_space_memory);
+-    riscv_rom_copy_firmware_info(machine, harts,
+-                                 rom_base, rom_size,
+-                                 sizeof(reset_vec),
+-                                 kernel_entry);
++        if (!harts->harts[0].cfg.ext_zicsr) {
++            /*
++             * The Zicsr extension has been disabled, so let's ensure we don't
++             * run the CSR instruction. Let's fill the address with a non
++             * compressed nop.
++             */
++            reset_vec[2] = 0x00000013;   /*     addi   x0, x0, 0 */
++        }
 +
 +        /* copy in the reset vector in little_endian byte order */
 +        for (i = 0; i < ARRAY_SIZE(reset_vec); i++) {
@@ -107,31 +130,28 @@ index ebd351c840..7fe4b756bf 100644
 +        }
 +        rom_add_blob_fixed_as("mrom.reset", reset_vec, sizeof(reset_vec),
 +                              rom_base, &address_space_memory);
-+        riscv_rom_copy_firmware_info(machine, rom_base, rom_size, sizeof(reset_vec),
-+                                  kernel_entry);
-     }
--    rom_add_blob_fixed_as("mrom.reset", reset_vec, sizeof(reset_vec),
--                          rom_base, &address_space_memory);
--    riscv_rom_copy_firmware_info(machine, rom_base, rom_size, sizeof(reset_vec),
--                                 kernel_entry);
++        riscv_rom_copy_firmware_info(machine, harts,
++                                     rom_base, rom_size,
++                                     sizeof(reset_vec),
++                                     kernel_entry);
++    }
  }
  
  void riscv_setup_direct_kernel(hwaddr kernel_addr, hwaddr fdt_addr)
-diff --git a/hw/riscv/virt.c b/hw/riscv/virt.c
-index a5bc7353b4..4d89386c1a 100644
---- a/hw/riscv/virt.c
-+++ b/hw/riscv/virt.c
-@@ -74,7 +74,7 @@
+diff -Naur a/hw/riscv/virt.c b/hw/riscv/virt.c
+--- a/hw/riscv/virt.c	2025-04-22 23:26:11.000000000 +0300
++++ b/hw/riscv/virt.c	2025-08-13 08:23:35.045436625 +0300
+@@ -81,7 +81,7 @@
  
  static const MemMapEntry virt_memmap[] = {
      [VIRT_DEBUG] =        {        0x0,         0x100 },
 -    [VIRT_MROM] =         {     0x1000,        0xf000 },
-+    [VIRT_MROM] =         {     0x1000,        0x40000 },
++    [VIRT_MROM] =         {     0x1000,       0x40000 },
      [VIRT_TEST] =         {   0x100000,        0x1000 },
      [VIRT_RTC] =          {   0x101000,        0x1000 },
      [VIRT_CLINT] =        {  0x2000000,       0x10000 },
-@@ -1608,6 +1608,20 @@ static void virt_set_aclint(Object *obj, bool value, Error **errp)
-     s->have_aclint = value;
+@@ -1849,6 +1849,20 @@
+     visit_type_OnOffAuto(v, name, &s->iommu_sys, errp);
  }
  
 +static char *virt_get_rom(Object *obj, Error **errp)
@@ -148,27 +168,26 @@ index a5bc7353b4..4d89386c1a 100644
 +    rvs->rom = g_strdup(value);
 +}
 +
- static HotplugHandler *virt_machine_get_hotplug_handler(MachineState *machine,
-                                                         DeviceState *dev)
+ bool virt_is_acpi_enabled(RISCVVirtState *s)
  {
-@@ -1679,6 +1693,9 @@ static void virt_machine_class_init(ObjectClass *oc, void *data)
-     sprintf(str, "Set number of guest MMIO pages for AIA IMSIC. Valid value "
-                  "should be between 0 and %d.", VIRT_IRQCHIP_MAX_GUESTS);
-     object_class_property_set_description(oc, "aia-guests", str);
+     return s->acpi != ON_OFF_AUTO_OFF;
+@@ -1977,6 +1991,9 @@
+                               NULL, NULL);
+     object_class_property_set_description(oc, "iommu-sys",
+                                           "Enable IOMMU platform device");
 +
 +    object_class_property_add_str(oc, "rom", virt_get_rom, virt_set_rom);
 +    object_class_property_set_description(oc, "rom", "ROM image");
  }
  
  static const TypeInfo virt_machine_typeinfo = {
-diff --git a/include/hw/riscv/virt.h b/include/hw/riscv/virt.h
-index be4ab8fe7f..9db8062d11 100644
---- a/include/hw/riscv/virt.h
-+++ b/include/hw/riscv/virt.h
-@@ -56,6 +56,7 @@ struct RISCVVirtState {
-     bool have_aclint;
-     RISCVVirtAIAType aia_type;
-     int aia_guests;
+diff -Naur a/include/hw/riscv/virt.h b/include/hw/riscv/virt.h
+--- a/include/hw/riscv/virt.h	2025-04-22 23:26:11.000000000 +0300
++++ b/include/hw/riscv/virt.h	2025-08-13 08:24:57.722316893 +0300
+@@ -63,6 +63,7 @@
+     const MemMapEntry *memmap;
+     struct GPEXHost *gpex_host;
+     OnOffAuto iommu_sys;
 +    char *rom;
  };
  
