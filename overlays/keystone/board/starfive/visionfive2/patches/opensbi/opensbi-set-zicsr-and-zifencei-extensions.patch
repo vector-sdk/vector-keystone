@@ -1,0 +1,20 @@
+--- a/Makefile	2025-07-12 22:14:08.601535817 +0300
++++ b/Makefile	2025-07-13 09:23:12.484966584 +0300
+@@ -293,7 +293,7 @@
+ ifeq ($(CC_SUPPORT_SAVE_RESTORE),y)
+ CFLAGS		+=	-mno-save-restore
+ endif
+-CFLAGS		+=	-mabi=$(PLATFORM_RISCV_ABI) -march=$(PLATFORM_RISCV_ISA)
++CFLAGS		+=	-mabi=$(PLATFORM_RISCV_ABI) -march=$(PLATFORM_RISCV_ISA)_zicsr_zifencei
+ CFLAGS		+=	-mcmodel=$(PLATFORM_RISCV_CODE_MODEL)
+ CFLAGS		+=	$(RELAX_FLAG)
+ CFLAGS		+=	$(GENFLAGS)
+@@ -311,7 +311,7 @@
+ ifeq ($(CC_SUPPORT_SAVE_RESTORE),y)
+ ASFLAGS		+=	-mno-save-restore
+ endif
+-ASFLAGS		+=	-mabi=$(PLATFORM_RISCV_ABI) -march=$(PLATFORM_RISCV_ISA)
++ASFLAGS		+=	-mabi=$(PLATFORM_RISCV_ABI) -march=$(PLATFORM_RISCV_ISA)_zicsr_zifencei
+ ASFLAGS		+=	-mcmodel=$(PLATFORM_RISCV_CODE_MODEL)
+ ASFLAGS		+=	$(RELAX_FLAG)
+ ifneq ($(CC_IS_CLANG),y)
