@@ -3,6 +3,9 @@
 ## Packages ##
 ##############
 
+# Toolchains
+include $(sort $(wildcard $(BR2_EXTERNAL_KEYSTONE_PATH)/toolchain/*/*.mk))
+
 # Bootloaders
 include $(sort $(wildcard $(BR2_EXTERNAL_KEYSTONE_PATH)/boot/*/*.mk))
 

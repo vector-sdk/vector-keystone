@@ -1,4 +1,7 @@
 
+# Toolchains
+source "$BR2_EXTERNAL_KEYSTONE_PATH/toolchain/keystone-bootrom-toolchain/Config.in.host"
+
 # Bootloaders
 source "$BR2_EXTERNAL_KEYSTONE_PATH/boot/keystone-bootrom/Config.in"
 source "$BR2_EXTERNAL_KEYSTONE_PATH/boot/keystone-sm/Config.in"

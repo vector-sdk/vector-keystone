@@ -1,0 +1,5 @@
+config BR2_TARGET_HOST_KEYSTONE_BOOTROM_TOOLCHAIN
+	bool "Keystone boot ROM toolchain"
+	help
+	  This toolchain is used to compile Keystone boot ROM image.
+
