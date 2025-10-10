@@ -20,5 +20,7 @@ define KEYSTONE_BOOTROM_INSTALL_IMAGES_CMDS
 	$(INSTALL) -m 0644 -D $(@D)/bootrom.elf $(BINARIES_DIR)/bootrom.elf
 endef
 
+KEYSTONE_BOOTROM_DEPENDENCIES += host-keystone-bootrom-toolchain
+
 $(eval $(keystone-package))
 $(eval $(generic-package))
