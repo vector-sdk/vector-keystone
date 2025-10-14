@@ -37,6 +37,9 @@ ifeq ($(KEYSTONE_PLATFORM),mpfs)
 	ADDITIONAL_OVERLAYS  	:= \$$(BR2_EXTERNAL_MCHP_PATH)/board/microchip/icicle/rootfs-overlay
 endif
 
+# Rust SDK modules
+EXTERNALS += vector
+
 # Highest priority external
 EXTERNALS += keystone
 
