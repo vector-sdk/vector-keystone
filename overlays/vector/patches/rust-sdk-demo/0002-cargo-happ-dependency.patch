@@ -1,0 +1,11 @@
+--- a/rust-happ/Cargo.toml	2025-01-29 11:33:41.000000000 +0200
++++ b/rust-happ/Cargo.toml	2025-10-15 14:23:17.612131321 +0300
+@@ -14,7 +14,7 @@
+ [dependencies]
+ 
+ [dependencies.happ]
+-path = "../rust-sdk/libhapp"
++path = "../../host-rust-sdk-v0.4.0/libhapp"
+ 
+ [features]
+ default      = []

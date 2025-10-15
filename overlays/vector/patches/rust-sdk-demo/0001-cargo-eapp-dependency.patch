@@ -1,0 +1,12 @@
+--- a/rust-eapp/Cargo.toml	2025-01-29 11:33:41.000000000 +0200
++++ b/rust-eapp/Cargo.toml	2025-10-15 14:18:16.861663402 +0300
+@@ -14,7 +14,7 @@
+ [dependencies]
+ 
+ [dependencies.eapp]
+-path = "../rust-sdk/libeapp"
++path = "../../host-rust-sdk-v0.4.0/libeapp"
+ 
+ [features]
+ default      = []
+ 
