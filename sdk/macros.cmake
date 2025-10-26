@@ -154,7 +154,7 @@ macro(add_keystone_package target_name package_name package_script) # files are 
   separate_arguments(package_script_raw UNIX_COMMAND ${package_script})
   add_custom_target(${target_name} DEPENDS ${pkg_files}
     COMMAND
-      ${MAKESELF} --noprogress ${pkg_dir} ${package_name} \"Keystone Enclave Package\" ${package_script_raw}
+      ${MAKESELF} --tar-extra "--owner=0 --group=0" --noprogress ${pkg_dir} ${package_name} \"Keystone Enclave Package\" ${package_script_raw}
     )
 
 endmacro(add_keystone_package)
