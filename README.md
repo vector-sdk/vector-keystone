@@ -1,106 +1,104 @@
 # Keystone: An Open-Source Secure Enclave Framework for RISC-V Processors
 
-![Documentation Status](https://readthedocs.org/projects/keystone-enclave/badge/)
-[![Build Status](https://travis-ci.org/keystone-enclave/keystone.svg?branch=master)](https://travis-ci.org/keystone-enclave/keystone/)
-
-> Visit [Project Website](https://keystone-enclave.org) for more information.
-
 ## Introduction
 
-Keystone is an open-source project that builds trusted execution environments (TEEs) for RISC-V systems. Its hardware-enforced and software-defined memory isolation enables trusted computing (a.k.a. confidential computing) with various threat models and functionalities. The implementation is platform-agnostic, making Keystone portable across different RISC-V platforms with minimal engineering efforts.
-
+This repository is cloned from the original
+[Keystone repository](https://github.com/keystone-enclave/keystone) from
+GitHub. The repository includes additional commits to support StarFive
+VisionFive2 RISC-V development board. Upstream Keystone is still available
+in the branch 'upstream'. See the original
+[README-KEYSTONE.md](https://github.com/keystone-enclave/keystone/blob/master/README-KEYSTONE.md)
+file to check Keystone goals, status, documentation, and current hardware
+support. 
 
 ## Goals
 
-Keystone is a free and open framework for architecting and deploying TEEs on RISC-V hardware platforms. The project's goals are:
-
-* **Enable TEE on (almost) all RISC-V processors**: Keystone aims to support as many RISC-V processor cores that follow RISC-V standard ISA and sub-ISAs as possible. This will help hardware designers and manufacturers to enable TEE with minimal efforts.
-
-* **Make TEE easy to customize depending on needs**: while providing simple TEE features, Keystone also aims to allow various customization that depends on platform-specific features or non-standard sub-ISAs. We borrow the concept from software-defined network, where hardware platform provides *primitives* and the software leverages the primitives to implement specific functionalities or meet security requirements.
-
-* **Reduce the cost of building TEE**: Keystone aims to reduce the cost of building TEE or TEE-based systems. We achieve this by reusing the implementation across multiple different platforms, reducing hardware integration cost, reducing verification cost, and integrating with existing software tools. We hope that anyone can simply extend Keystone to build their own novel TEE design with very low cost.
-
+The repository is used to test VECTOR Rust SDK with RISC-V hardware
+that is not yet supported by the upstream Keystone.
 
 ## Status
 
-Keystone started as an academic project that helps researchers to build and test their ideas. 
-Now, Keystone is an **Incubation Stage** open-source project of the Confidential Computing Consortium (CCC) under the Linux Foundation. 
+The repository includes one unmerged
+[pull request](https://github.com/keystone-enclave/keystone/pull/467)
+from the original Keystone repository and few additional commits that
+enable the use of Keystone test keys with StarFive VisionFive2 RISC-V
+development board.
 
-Keystone has helped many researchers focus on their creative ideas instead of building TEE by themselves from scratch.
-This resulted in many innovative research projects and publications, which have been pushing the technical advancement of TEEs.
+This has been tested with qemu and StarFive VisionFive2 RISC-V
+development board.
 
-We are currently trying to make Keystone production-ready. You can find the latest general roadmap of Keystone [here](https://docs.google.com/document/d/1AxT0w6NCtfvZcFE1wbZAkAODftqRYhpHaj63mvnQQqA/edit?usp=sharing)
+The repository now includes also Rust SDK and Rust SDK demo packages.
+Rust SDK demonstrator is installed to the target system root user's
+home directory with a name rust-sdk-demo.ke.
 
-Here are some ongoing and/or planned efforts towards the goal:
+Keystone has been updated to use newer buildroot (2025.05). Build
+assumes that Rust environment is installed separtely to the host
+system using rustup and nightly build is set as a default target
+(Rust SDK is utilizing a Cargo workspace feature that still is only
+available in nightly builds).
 
-* **Technical Improvements**: Make Keystone more usable and on par with existing industry solutions, including memory isolation improvement, better application and hardware support, and additional features.
+## Build and test instructions
 
-* **Parity with Industry Standards**: Make Keystone follow the industry standard. This includes standard cryptography, measured boot, and remote attestation protocols. 
+### StarFive VisionFive2
 
-* **Hardware Integration**: Partner with RISC-V hardware designer/vendor to fully integrate with the hardware. This includes integration with hardware root-of-trust, memory encryption engine, and crypto accelerators.
+Keystone build can be controlled using various environment variables
+and configuration files. The following script can be used to build
+Keystone for StarFive VisionFive2:
 
-## Documentation
+    scripts/build_visionfive2.sh
 
-See [docs](http://docs.keystone-enclave.org) for getting started.
+The build will produce an image file:
 
-## Hardware Support
+    build-starfive/visionfive264/buildroot.build/images/sdcard.img
 
-Keystone requires a standard RISC-V platform with a *hardware root of trust* --- including secure key storage and measured boot. Currently, no hardware root of trust has been designed or manufactured specifically for Keystone. If you have a open-source root-of-trust we'd love to integrate with it!
+Flash the image file to a microSD card using,
+e.g., [balenaEtcher](https://etcher.balena.io/). For console output
+you may need an USB-to-UART adapter like
+[Raspberry Pi Debug Probe](https://www.raspberrypi.com/documentation/microcontrollers/debug-probe.html).
+Login with credentials (root/starfive).
 
-As this project focuses more on the software stack and the toolchain, you can still run the full Keystone software stack on top of a few RISC-V platforms without a real root-of-trust. See https://github.com/keystone-enclave/keystone/tree/master/sm/plat for the supported platforms. In general, `generic` should work with most of the standard RISC-V cores as long as they support:
+The script can also be used with Keystone 'dirclean' targets that are
+set using BUILDROOT_TARGET environment variables. The following command
+will clean Linux driver build directory:
 
-- RV64 with SV39 addressing mode (or RV32 with SV32)
-- M/S/U privilege modes
-- More than 4 PMP registers
+    BUILDROOT_TARGET=keystone-driver-dirclean scripts/build-visionfive2.sh
 
-For full security, platform architect needs to provide the followings
+Files from
 
-- Entropy source (and ideally a platform specific random number generator)
-- Measured boot
-- Secure on-chip key storage
+    build-starfive/visionfive264/overlay/root
 
-Keystone doesn’t provide high-performance hardware-based memory encryption, as it requires a proprietary memory controller. Instead, it provides an example software-based encryption, which uses scratchpad SRAM (if any) to encrypt physical pages.
+end up to root user's home directory and can be used to test VECTOR Rust SDK.
 
-## Team
+### Qemu
 
-Contributors
+Generic is still the default target. Compilation can be done with make:
 
-- Gregor Haas
-- Evgeny Pobachienko
-- Jakob Sorensen
-- David Kholbrenner
-- Alex Thomas
-- Cathy Lu
-- Gui Andrade
-- Kevin Chen
-- Stephan Kaminsky
-- Dayeol Lee (Maintainer)
+    make
 
-Advisors
+Qemu is invoked with
 
-- David Kohlbrenner @ UW
-- Shweta Shinde @ ETH Zurich
-- Krste Asanovic @ UCB
-- Dawn Song @ UCB
+    make run
 
-## License
+Login with credentials (root/sifive).
 
-Keystone is under BSD-3.
+Also here Keystone 'dirclean' targets that are set using
+BUILDROOT_TARGET environment variables. The following command will
+clean Linux driver build directory:
 
-## Contributing
+    BUILDROOT_TARGET=keystone-driver-dirclean make
 
-See CONTRIBUTING.md
+Files from
 
-## Citation
+    build-generic64/overlay/root
 
-If you want to cite the project, please use the following bibtex:
+end up to root user's home directory and can be used to test VECTOR Rust SDK.
 
-```
-@inproceedings{lee2019keystone,
-    title={Keystone: An Open Framework for Architecting Trusted Execution Environments},
-    author={Dayeol Lee and David Kohlbrenner and Shweta Shinde and Krste Asanovic and Dawn Song},
-    year={2020},
-    booktitle = {Proceedings of the Fifteenth European Conference on Computer Systems},
-    series = {EuroSys’20}
-}
-```
+## Acknowledgment
+
+This work is partly supported by the European Union’s Horizon Europe
+research and innovation programme in the scope of the the
+[CONFIDENTIAL6G](https://confidential6g.eu/) project under Grant
+Agreement 101096435.
+
+
+
