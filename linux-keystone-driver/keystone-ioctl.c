@@ -9,9 +9,7 @@
 #include <linux/uaccess.h>
 #include <linux/string.h>
 
-int __keystone_destroy_enclave(unsigned int ueid);
-
-int keystone_create_enclave(struct file *filep, unsigned long arg)
+static int keystone_create_enclave(struct file *filep, unsigned long arg)
 {
   /* create parameters */
   struct keystone_ioctl_create_enclave *enclp = (struct keystone_ioctl_create_enclave *) arg;
@@ -36,7 +34,7 @@ int keystone_create_enclave(struct file *filep, unsigned long arg)
 }
 
 
-int keystone_finalize_enclave(unsigned long arg)
+static int keystone_finalize_enclave(unsigned long arg)
 {
   struct sbiret ret;
   struct enclave *enclave;
@@ -92,7 +90,7 @@ error_destroy_enclave:
 
 }
 
-int keystone_run_enclave(unsigned long data)
+static int keystone_run_enclave(unsigned long data)
 {
   struct sbiret ret;
   unsigned long ueid;
@@ -120,7 +118,7 @@ int keystone_run_enclave(unsigned long data)
   return 0;
 }
 
-int utm_init_ioctl(struct file *filp, unsigned long arg)
+static int utm_init_ioctl(struct file *filp, unsigned long arg)
 {
   int ret = 0;
   struct utm *utm;
@@ -151,21 +149,7 @@ int utm_init_ioctl(struct file *filp, unsigned long arg)
   return ret;
 }
 
-
-int keystone_destroy_enclave(struct file *filep, unsigned long arg)
-{
-  int ret;
-  struct keystone_ioctl_create_enclave *enclp = (struct keystone_ioctl_create_enclave *) arg;
-  unsigned long ueid = enclp->eid;
-
-  ret = __keystone_destroy_enclave(ueid);
-  if (!ret) {
-    filep->private_data = NULL;
-  }
-  return ret;
-}
-
-int __keystone_destroy_enclave(unsigned int ueid)
+static int __keystone_destroy_enclave(unsigned int ueid)
 {
   struct sbiret ret;
   struct enclave *enclave;
@@ -193,7 +177,20 @@ int __keystone_destroy_enclave(unsigned int ueid)
   return 0;
 }
 
-int keystone_resume_enclave(unsigned long data)
+static int keystone_destroy_enclave(struct file *filep, unsigned long arg)
+{
+  int ret;
+  struct keystone_ioctl_create_enclave *enclp = (struct keystone_ioctl_create_enclave *) arg;
+  unsigned long ueid = enclp->eid;
+
+  ret = __keystone_destroy_enclave(ueid);
+  if (!ret) {
+    filep->private_data = NULL;
+  }
+  return ret;
+}
+
+static int keystone_resume_enclave(unsigned long data)
 {
   struct sbiret ret;
   struct keystone_ioctl_run_enclave *arg = (struct keystone_ioctl_run_enclave*) data;
