@@ -1,0 +1,7 @@
+config BR2_PACKAGE_HOST_WASM_DEMO
+	bool "Secure channel Web Assembly demo for Keystone"
+	depends on BR2_PACKAGE_HOST_RUST_SDK
+	select BR2_PACKAGE_HOST_RUSTC
+	select BR2_PACKAGE_HOST_STATIC_DH_ECDH
+	help
+	  Install Web Assembly demo that is using Rust SDK.

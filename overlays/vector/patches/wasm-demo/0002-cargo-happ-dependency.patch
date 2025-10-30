@@ -1,0 +1,11 @@
+--- a/wasm-host/Cargo.toml	2025-10-30 15:20:11.222373012 +0200
++++ b/wasm-host/Cargo.toml	2025-10-30 15:26:08.351595498 +0200
+@@ -20,7 +20,7 @@
+ clap           = { version = "4.5.36", features = ["derive", "string"] }
+ 
+ [dependencies.happ]
+-path = "../rust-sdk/libhapp"
++path = "../../host-rust-sdk-v0.4.0/libhapp"
+ 
+ [dependencies.schannel-lib]
+ path = "../schannel-lib"

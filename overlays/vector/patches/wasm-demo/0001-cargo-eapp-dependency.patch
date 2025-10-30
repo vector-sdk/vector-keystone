@@ -1,0 +1,15 @@
+--- a/wasm-rt/Cargo.toml	2025-11-19 15:43:44.448404771 +0200
++++ b/wasm-rt/Cargo.toml	2025-11-19 16:21:34.319016779 +0200
+@@ -22,10 +22,10 @@
+ spin           = {version = "0.10.0"}
+ 
+ [dependencies.eapp]
+-path = "../rust-sdk/libeapp"
++path = "../../host-rust-sdk-v0.4.0/libeapp"
+ 
+ [dependencies.static-dh-ecdh]
+-path = "../static-dh-ecdh"
++path = "../../host-static-dh-ecdh-v0.1.1+"
+ 
+ [features]
+ default      = []
