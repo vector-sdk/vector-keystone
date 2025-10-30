@@ -1,4 +1,5 @@
 menu "Rust packages"
     source "$BR2_EXTERNAL_VECTOR_PATH/package/rust-sdk/Config.in.host"
     source "$BR2_EXTERNAL_VECTOR_PATH/package/rust-sdk-demo/Config.in.host"
+    source "$BR2_EXTERNAL_VECTOR_PATH/package/static-dh-ecdh/Config.in.host"
 endmenu

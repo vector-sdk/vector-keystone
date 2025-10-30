@@ -1,0 +1,7 @@
+config BR2_PACKAGE_HOST_STATIC_DH_ECDH
+	bool "Elliptic curve Diffie-Hellman library"
+	select BR2_PACKAGE_HOST_RUSTC
+	help
+	  Install no_std compatible Rust-based elliptic curve
+	  Diffie-Hellman library.
+
