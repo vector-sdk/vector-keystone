@@ -1,0 +1,7 @@
+config BR2_PACKAGE_HOST_SCHANNEL_DEMO
+	bool "Secure channel Rust SDK demo for Keystone"
+	depends on BR2_PACKAGE_HOST_RUST_SDK
+	select BR2_PACKAGE_HOST_RUSTC
+	select BR2_PACKAGE_HOST_STATIC_DH_ECDH
+	help
+	  Install secure channel demo that is using Rust SDK.

@@ -1,0 +1,15 @@
+--- a/schannel-eapp/Cargo.toml	2025-10-30 07:25:21.166576559 +0200
++++ b/schannel-eapp/Cargo.toml	2025-10-30 10:59:49.764843961 +0200
+@@ -20,10 +20,10 @@
+ no-std-compat = "0.4.1"
+ 
+ [dependencies.eapp]
+-path = "../rust-sdk/libeapp"
++path = "../../host-rust-sdk-v0.4.0/libeapp"
+ 
+ [dependencies.static-dh-ecdh]
+-path = "../static-dh-ecdh"
++path = "../../host-static-dh-ecdh-v0.1.1+"
+ 
+ [features]
+ default      = []

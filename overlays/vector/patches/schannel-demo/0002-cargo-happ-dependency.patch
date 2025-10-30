@@ -1,0 +1,11 @@
+--- a/schannel-host/Cargo.toml	2025-10-29 20:19:14.610888136 +0200
++++ b/schannel-host/Cargo.toml	2025-10-30 10:53:45.631890882 +0200
+@@ -19,7 +19,7 @@
+ lazy_static    = "1.4.0"
+ 
+ [dependencies.happ]
+-path = "../rust-sdk/libhapp"
++path = "../../host-rust-sdk-v0.4.0/libhapp"
+ 
+ [dependencies.schannel-lib]
+ path = "../schannel-lib"
