@@ -4,7 +4,7 @@
 #
 ################################################################################
 RUST_SDK_DEMO_VERSION = v0.4.0
-RUST_SDK_DEMO_SITE = git@github.com:vector-sdk/rust-sdk-demo.git
+RUST_SDK_DEMO_SITE = https://github.com/vector-sdk/rust-sdk-demo.git
 RUST_SDK_DEMO_SITE_METHOD = git
 HOST_RUST_SDK_DEMO_INSTALL_STAGING = YES
 HOST_RUST_SDK_DEMO_INSTALL_TARGET = YES
