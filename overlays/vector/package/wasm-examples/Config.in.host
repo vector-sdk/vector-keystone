@@ -1,0 +1,4 @@
+config BR2_PACKAGE_HOST_WASM_EXAMPLES
+	bool "Build and install Web Assembly examples"
+	help
+	  Install Web Assembly examples to root user's home directory.
