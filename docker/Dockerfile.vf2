@@ -1,15 +1,16 @@
 #
-# Dockerfile for Keystone qemu build using Ubuntu 24.04 host
+# Dockerfile for Keystone VisionFive2 build using Ubuntu 24.04 host
 #
-# This docker file can be used to build qemu configuration that also
-# includes the developed demonstrators.
+# This docker file can be used to build StarFive VisionFive2 configuration
+# that also includes the developed demonstrators. 
 #
 # Build:
-#   $ docker build -t keystone .
+#   $ docker build -t visionfive2 -f Dockerfile.visionfive2 .
 #
 # Run shell:
-#   $ docker run -it keystone
+#   $ docker run -it visionfive2
 #
+
 FROM ubuntu:24.04
 
 RUN apt-get update
@@ -38,9 +39,14 @@ RUN rustup target add riscv64gc-unknown-linux-gnu
 
 RUN git clone https://github.com/vector-sdk/vector-keystone.git /keystone
 
+ENV KEYSTONE_PLATFORM starfive/visionfive2
+ENV KEYSTONE_BITS 64
+ENV BUILDROOT_CONFIGFILE riscv64_starfive_visionfive2_defconfig
+ENV BUILDROOT_TARGET all
+
 RUN cd /keystone && \
     git checkout $CHECKOUT && \
     ./fast-setup.sh && \
-    make -j$(nproc)
+    make
 
 ENTRYPOINT cd /keystone ; exec /usr/bin/bash -l

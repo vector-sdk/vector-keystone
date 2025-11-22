@@ -93,6 +93,11 @@ Files from
 
 end up to root user's home directory and can be used to test VECTOR Rust SDK.
 
+### Building with Docker
+
+It is now also possible to build this using Docker. See the file
+'docker/README.md' for details.
+
 ## Acknowledgment
 
 This work is partly supported by the European Union’s Horizon Europe
